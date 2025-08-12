@@ -1,36 +1,29 @@
-# archivo de configuración para GitHub Actions
-# nombre del workflow
-name: DevOps
+name: Deploy to GitHub Pages with PAT
 
-# controles cuando el workflow corra
 on:
-  # Triggers cuando haya un push o una solicitud de pull request en la rama "main" 
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-  # Permite que el workflow se ejecute manualmente desde la pestaña de Actions en GitHub
+    branches: ["main"]
   workflow_dispatch:
 
-
 jobs:
-  # Este workflow contiene un job llamado "build"
-  build:
-    # Este job se ejecutará en un runner con el sistema operativo Ubuntu (la última versión disponible)
+  build-and-deploy:
     runs-on: ubuntu-latest
 
-    # Tareas individuales que se ejecutaran en el job
+    # Por si el Action hace push (lo hará):
+    permissions:
+      contents: write
+
     steps:
-      # Clona el repositorio en el runner para que los siguientes steps tengan acceso al código
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      # Ejecuta el comando echo Prueba, CI, que simplemente imprime "Prueba, CI" en la consola
-      - name: Run a one-line script
-        run: echo Prueba, CI
+      # Si tu sitio requiere build (React/Vite/etc.), agrega pasos aquí.
+      # Para sitio estático puro en /site, no hace falta build.
 
-      # Ejecuta dos comandos echo en secuencia. El primer comando imprime "Add other actions to build," y el segundo imprime "test, and deploy your project." en la consola
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          # ¡OJO! Usamos el token manual guardado en Secrets, NO GITHUB_TOKEN
+          personal_token: ${{ secrets.PAGES_TOKEN }}
+          publish_dir: ./site
+          publish_branch: gh-pages
