@@ -24,6 +24,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           # ¡OJO! Usamos el token manual guardado en Secrets, NO GITHUB_TOKEN
-          personal_token: ${{ secrets.PAGES_TOKEN }}
+          personal_token: ${{ secrets.PAGESTOKEN }}
           publish_dir: ./site
+
           publish_branch: gh-pages
